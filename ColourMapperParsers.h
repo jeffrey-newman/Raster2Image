@@ -8,7 +8,11 @@
 #include "MagickWriterClassified.h"
 #include "MagickWriterLinearGradient.h"
 
-
+#include <boost/spirit/include/qi.hpp>
+#include <boost/config/warning_disable.hpp>
+#include <boost/spirit/include/phoenix_core.hpp>
+#include <boost/spirit/include/phoenix_operator.hpp>
+#include <boost/spirit/include/phoenix_stl.hpp>
 
 
 /**
@@ -37,15 +41,15 @@ struct Skipper : boost::spirit::qi::grammar< std::string::iterator >
 
 boost::shared_ptr<ColourMapperClassified> parseColourMapClassified(boost::filesystem::path  classified_legend_file)
 {
-    std::vector<std::tuple<int, std::tuple<double, double, double> > > colours;
+    std::vector<boost::fusion::vector<int, std::vector<double> > > colours;
     boost::shared_ptr<ColourMapperClassified> colour_mapper(new ColourMapperClassified);
 
     namespace qi = boost::spirit::qi;
     namespace ph = boost::phoenix;
 
-    qi::rule<std::string::iterator, std::tuple<double, double, double>(), Skipper > rgb_parser = qi::double_ >>  qi::double_ >> qi::double_;
-    qi::rule<std::string::iterator, std::tuple<int, std::tuple<double, double, double> > (), Skipper > category_parser = qi::int_ >> rgb_parser;
-    qi::rule<std::string::iterator, std::vector<std::tuple<int, std::tuple<double, double, double> > >(), Skipper > legend_parser = +category_parser;
+    qi::rule<std::string::iterator, std::vector<double>(), Skipper > rgb_parser = qi::double_ >>  qi::double_ >> qi::double_;
+    qi::rule<std::string::iterator, boost::fusion::vector<int, std::vector<double> > (), Skipper > category_parser = qi::int_ >> rgb_parser;
+    qi::rule<std::string::iterator, std::vector<boost::fusion::vector<int, std::vector<double> > >(), Skipper > legend_parser = +category_parser;
 
 
     //Now we read the file.
@@ -89,14 +93,14 @@ boost::shared_ptr<ColourMapperClassified> parseColourMapClassified(boost::filesy
         fin.close();
 
 
-        typedef std::tuple< int, std::tuple<double, double, double> > CategoryColourMap;
+        typedef boost::fusion::vector<int, std::vector<double> >  CategoryColourMap;
         typedef std::pair<const int, Magick::ColorRGB> ColourMapPair;
         BOOST_FOREACH(CategoryColourMap & clr_map, colours)
                     {
-                        colour_mapper->insert(ColourMapPair(std::get<0>(clr_map),Magick::ColorRGB(std::get<0>(std::get<1>(clr_map)) / 255.0,
-                                                                                                 std::get<1>(std::get<1>(clr_map)) / 255.0,
-                                                                                                 std::get<2>(std::get<1>(clr_map)) / 255.0
-                        )             )                              );
+                        colour_mapper->insert(ColourMapPair(boost::fusion::at_c<0>(clr_map),Magick::ColorRGB(boost::fusion::at_c<1>(clr_map)[0] / 255.0,
+                                                                                                             boost::fusion::at_c<1>(clr_map)[1]  / 255.0,
+                                                                                                             boost::fusion::at_c<1>(clr_map)[2]  / 255.0
+                                             )             )                                                );
                     }
 
     }
