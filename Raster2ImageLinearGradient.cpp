@@ -13,7 +13,7 @@
 #include <blink/raster/utility.h>
 //#include "PngWriterLinearGradient.h"
 //#include <Magick++.h>
-#include "MagickWriterLinearGradient.h"
+#include "MagickWriterGradient.h"
 
 // Additional command line parser which interprets '@something' as a
 // option "config-file" with the value "something"

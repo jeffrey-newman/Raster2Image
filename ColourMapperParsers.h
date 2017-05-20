@@ -6,7 +6,7 @@
 #define GEON_ZONAL_OPT_COLOURMAPPERPARSERS_H
 
 #include "MagickWriterClassified.h"
-#include "MagickWriterLinearGradient.h"
+#include "MagickWriterGradient.h"
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/config/warning_disable.hpp>
@@ -114,7 +114,8 @@ boost::shared_ptr<ColourMapperClassified> parseColourMapClassified(boost::filesy
 }
 
 
-BOOST_FUSION_ADAPT_STRUCT(ColourMapperLinearGradient,
+BOOST_FUSION_ADAPT_STRUCT(ColourMapperGradient,
+                                  (ColourMapperGradient::Transform, transfrm)
                                   (double, red0)
                                   (double, green0)
                                   (double, blue0)
@@ -126,16 +127,17 @@ BOOST_FUSION_ADAPT_STRUCT(ColourMapperLinearGradient,
 )
 
 
-boost::shared_ptr<ColourMapperLinearGradient> parseColourMapLinearGradient(boost::filesystem::path  classified_legend_file)
+boost::shared_ptr<ColourMapperGradient> parseColourMapLinearGradient(boost::filesystem::path  classified_legend_file)
 {
 
-    boost::shared_ptr<ColourMapperLinearGradient> colours(new ColourMapperLinearGradient);
+    boost::shared_ptr<ColourMapperGradient> colours(new ColourMapperGradient);
 
     namespace qi = boost::spirit::qi;
     namespace ph = boost::phoenix;
 
     qi::rule<std::string::iterator, Skipper > values_parser =
-                            ( qi::lit("red0") | qi::lit("=") >> qi::double_[ph::ref(colours->red0) = qi::_1 / ph::val(255.0)]
+                            ( qi::lit("transform") >> qi::lit("=") >> (qi::lit("Linear")[qi::_val = ColourMapperGradient::LINEAR] | qi::lit("Log")[qi::_val = ColourMapperGradient::LOG])
+                            | qi::lit("red0") >> qi::lit("=") >> qi::double_[ph::ref(colours->red0) = qi::_1 / ph::val(255.0)]
                             | qi::lit("green0") >> qi::lit("=") >> qi::double_[ph::ref(colours->green0) = qi::_1 / ph::val(255.0)]
                             | qi::lit("blue0") >> qi::lit("=") >> qi::double_[ph::ref(colours->blue0) = qi::_1 / ph::val(255.0)]
                             | qi::lit("red1") >> qi::lit("=") >> qi::double_[ph::ref(colours->red1) = qi::_1 / ph::val(255.0)]

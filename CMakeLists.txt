@@ -96,14 +96,14 @@ file(GLOB_RECURSE AHHZ_Utils
 
 set(PLOTTER_CLASSES_SRC
         MagickWriterClassified.cpp
-        MagickWriterLinearGradient.cpp
+        MagickWriterGradient.cpp
         GifWriterLinearGradient.cpp
         GifWriterClassified.cpp
         )
 
 set(PLOTTER_CLASSES_HDRS
         MagickWriterClassified.h
-        MagickWriterLinearGradient.h
+        MagickWriterGradient.h
         GifWriterLinearGradient.h
         GifWriterClassified.h
         )

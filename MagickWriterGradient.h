@@ -11,20 +11,22 @@
 
 enum BuiltInGradients {BLUES, GREENS};
 
-struct ColourMapperLinearGradient
+struct ColourMapperGradient
 {
-    ColourMapperLinearGradient(double _red0, double _green0, double _blue0, double _red1, double _green1, double _blue1, double _min, double _max)
+    enum Transform {LINEAR, LOG};
+    ColourMapperGradient(Transform transfrm, double _red0, double _green0, double _blue0, double _red1, double _green1, double _blue1, double _min, double _max)
             : red0(_red0), green0(_green0), blue0(_blue0), red1(_red1), green1(_green1), blue1(_blue1), min(_min), max(_max)
     {
 
     }
 
-    ColourMapperLinearGradient()
-            : red0(0), green0(0), blue0(0), red1(0), green1(0), blue1(0), min(0), max(0)
+    ColourMapperGradient()
+            : transfrm(LINEAR), red0(0), green0(0), blue0(0), red1(0), green1(0), blue1(0), min(0), max(0)
     {
 
     }
 
+    Transform transfrm;
     double red0;
     double green0;
     double blue0;
@@ -37,29 +39,35 @@ struct ColourMapperLinearGradient
     double max;
 };
 
-class MagickWriterLinearGradient {
+class MagickWriterGradient {
 private:
 
-    ColourMapperLinearGradient colours;
+    ColourMapperGradient colours;
 
 public:
-    MagickWriterLinearGradient(double _red0, double _green0, double _blue0, double _red1, double _green1, double _blue1, double _min, double _max)
-            : colours(_red0, _green0, _blue0, _red1, _green1, _blue1, _min, _max)
+    MagickWriterGradient(double _red0, double _green0, double _blue0, double _red1, double _green1, double _blue1, double _min, double _max)
+            : colours(ColourMapperGradient::LINEAR, _red0, _green0, _blue0, _red1, _green1, _blue1, _min, _max)
     {
 
+        if (colours.transfrm == ColourMapperGradient::LOG)
+        {
+            colours.min = log10(colours.min);
+            colours.max = log10(colours.max);
+        }
     }
 
-    MagickWriterLinearGradient(ColourMapperLinearGradient & _colours)
+    MagickWriterGradient(ColourMapperGradient & _colours)
             : colours(_colours)
     {
 
     }
 
 
-    MagickWriterLinearGradient(BuiltInGradients colour)
+    MagickWriterGradient(BuiltInGradients colour)
     {
         if (colour == BLUES)
         {
+            colours.transfrm = ColourMapperGradient::LINEAR;
             colours.red0 = 159.89 /255.0;
             colours.green0 = 175.7 / 255.0;
             colours.blue0 = 255 / 255.0;
@@ -88,12 +96,17 @@ public:
         Magick::Pixels view(image);
 
         boost::optional<double> no_data_val = raster.noDataVal();
+        double red = 0, blue = 0, green = 0;
+
         for (int i = 0; i < raster.nCols(); ++i)
         {
             for (int j = 0; j < raster.nRows(); ++j)
             {
                 double value = raster.get(blink::raster::coordinate_2d(j,i));
-                double red = 0, blue = 0, green = 0;
+                if (colours.transfrm == ColourMapperGradient::LOG)
+                {
+                    value = log10(value);
+                }
                 //Check for no data
 
                 if (value == no_data_val)
