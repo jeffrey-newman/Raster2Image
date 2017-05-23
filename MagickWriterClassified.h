@@ -61,7 +61,7 @@ public:
     template <typename T> void
     render(blink::raster::gdal_raster<T> & raster, boost::filesystem::path & file_path)
     {
-        Magick::Image image(Magick::Geometry(raster.nCols(), raster.nRows()), "white");
+        Magick::Image image(Magick::Geometry(raster.nCols()+1, raster.nRows()+1), "white");
         // Set the image type to TrueColor DirectClass representation.
         image.type(Magick::TrueColorType);
         // Ensure that there is only one reference to underlying image
