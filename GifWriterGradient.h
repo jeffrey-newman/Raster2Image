@@ -13,9 +13,22 @@
 
 enum BuiltInGradients {BLUES, GREENS};
 
-class GifWriterLinearGradient {
+struct ColourMapperGradient
+{
+    enum Transform {LINEAR, LOG};
+    ColourMapperGradient(Transform transfrm, double _red0, double _green0, double _blue0, double _red1, double _green1, double _blue1, double _min, double _max)
+            : red0(_red0), green0(_green0), blue0(_blue0), red1(_red1), green1(_green1), blue1(_blue1), min(_min), max(_max)
+    {
 
-private:
+    }
+
+    ColourMapperGradient()
+            : transfrm(LINEAR), red0(0), green0(0), blue0(0), red1(0), green1(0), blue1(0), min(0), max(0)
+    {
+
+    }
+
+    Transform transfrm;
     double red0;
     double green0;
     double blue0;
@@ -26,6 +39,12 @@ private:
 
     double min;
     double max;
+};
+
+class GifWriterGradient {
+
+private:
+    ColourMapperGradient colours;
 
     unsigned int origin_x;
     unsigned int origin_y;
@@ -47,32 +66,33 @@ private:
     int font_size;
 
 public:
-    GifWriterLinearGradient(int _red0, int _green0, int _blue0, int _red1, int _green1, int _blue1,  double _min, double _max, int _delay = 100, bool _do_timestamp = false, int _year_start = 0, int _font_size =192, unsigned int _origin_x = 0,
+    GifWriterGradient(int _red0, int _green0, int _blue0, int _red1, int _green1, int _blue1,  double _min, double _max, int _delay = 100, bool _do_timestamp = false, int _year_start = 0, int _font_size =192, unsigned int _origin_x = 0,
                             unsigned int _origin_y = 0, unsigned int _dx = 999999, unsigned int _dy = 999999)
-            : red0(_red0), green0(_green0), blue0(_blue0), red1(_red1), green1(_green1), blue1(_blue1), min(_min), max(_max)
+            : colours(ColourMapperGradient::LINEAR, _red0, _green0, _blue0, _red1, _green1, _blue1, _min, _max)
 //            , saver((AnimatedGifSaver *) nullptr), is_initialised(false),
               , delay(_delay), do_timestamp(_do_timestamp), year(_year_start), font_size(_font_size), origin_x(_origin_x), origin_y(_origin_y), dx(_dx), dy(_dy)
     {
 
     }
 
-    GifWriterLinearGradient(BuiltInGradients colour,  double _min, double _max, int _delay = 100, bool _do_timestamp = false, int _year_start = 0, int _font_size =192, unsigned int _origin_x = 0,
+    GifWriterGradient(BuiltInGradients colour,  double _min, double _max, int _delay = 100, bool _do_timestamp = false, int _year_start = 0, int _font_size =192, unsigned int _origin_x = 0,
                             unsigned int _origin_y = 0, unsigned int _dx = 999999, unsigned int _dy = 999999)
 //    : saver((AnimatedGifSaver *) nullptr), is_initialised(false)
-    : min(_min), max(_max), delay(_delay), do_timestamp(_do_timestamp), year(_year_start), font_size(_font_size), origin_x(_origin_x), origin_y(_origin_y), dx(_dx), dy(_dy)
+    :  delay(_delay), do_timestamp(_do_timestamp), year(_year_start), font_size(_font_size), origin_x(_origin_x), origin_y(_origin_y), dx(_dx), dy(_dy)
     {
         if (colour == BLUES)
         {
-            red0 = 247.0 /255.0;
-            green0 = 251.0 / 255.0;
-            blue0 = 255.0 / 255.0;
+            colours.transfrm = ColourMapperGradient::LINEAR;
+            colours.red0 = 159.89 /255.0;
+            colours.green0 = 175.7 / 255.0;
+            colours.blue0 = 255 / 255.0;
 
-            red1 = 8.0 / 255.0;
-            green1 = 48.0 / 255.0;
-            blue1 = 107.0 / 255.0;
-//
-//            min = 0;
-//            max= 10;
+            colours.red1 = 0.0;
+            colours.green1 = 43.27 / 255.0;
+            colours.blue1 = 186.12 / 255.0;
+
+            colours.min = _min;
+            colours.max= _max;
         }
 
     }
@@ -105,7 +125,7 @@ public:
                 double value = raster.get(blink::raster::coordinate_2d(j,i));
                 double red = 0, blue = 0, green = 0;
                 //Check for no data
-                boost::optional<double> no_data_val = raster.noDataVal();
+                boost::optional<double> no_data_val = raster.noDataVal();                
                 if (value == no_data_val)
                 {
                     red = 1;
@@ -114,12 +134,16 @@ public:
                 }
                 else
                 {
-                    if (value < min) value = min;
-                    if (value > max) value = max;
-                    double relative_val = (value - min) / (max - min);
-                    red = red0 - (red0 - red1) * relative_val;
-                    green = green0 - (green0 - green1) * relative_val;
-                    blue = blue0 - (blue0 - blue1) * relative_val;
+                    if (colours.transfrm == ColourMapperGradient::LOG)
+                    {
+                        value = log10(value);
+                    }
+                    if (value < colours.min) value = colours.min;
+                    if (value > colours.max) value = colours.max;
+                    double relative_val = (value - colours.min) / (colours.max - colours.min);
+                    red = colours.red0 - (colours.red0 - colours.red1) * relative_val;
+                    green = colours.green0 - (colours.green0 - colours.green1) * relative_val;
+                    blue = colours.blue0 - (colours.blue0 - colours.blue1) * relative_val;
                 }
 
                 if (red < 0) red  = 0;

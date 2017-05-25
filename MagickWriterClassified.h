@@ -71,14 +71,14 @@ public:
         // Allocate pixel view
         Magick::Pixels view(image);
 
-        boost::optional<int> no_data_val = raster.noDataVal();
+        boost::optional<T> no_data_val = raster.noDataVal();
         Magick::ColorRGB no_data_color(1,1,1);
 
         for (int i = 0; i < raster.nCols(); ++i)
         {
             for (int j = 0; j < raster.nRows(); ++j)
             {
-                int class_val = raster.get(blink::raster::coordinate_2d(j, i));
+                T class_val = raster.get(blink::raster::coordinate_2d(j, i));
                 if (class_val == no_data_val)
                 {
                     *(view.get(i,j,1,1)) = no_data_color;

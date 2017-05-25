@@ -11,9 +11,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 #include <blink/raster/utility.h>
-//#include "PngWriterLinearGradient.h"
-//#include <Magick++.h>
 #include "MagickWriterGradient.h"
+#include "ColourMapperParsers.h"
 
 // Additional command line parser which interprets '@something' as a
 // option "config-file" with the value "something"
@@ -25,6 +24,32 @@ std::pair<std::string, std::string> at_option_parser(std::string const&s)
         return std::pair<std::string, std::string>();
 }
 
+typedef std::pair<std::string, boost::filesystem::path> CmdLinePaths;
+
+bool
+pathify(CmdLinePaths & path)
+{
+    path.second = boost::filesystem::path(path.first);
+    if (!(boost::filesystem::exists(path.second)))
+    {
+        std::cout << "Warning: path " << path.first << " does not exist\n";
+        return false;
+    }
+    return true;
+}
+
+bool
+pathify_mk(CmdLinePaths & path)
+{
+    path.second = boost::filesystem::path(path.first);
+    if (!(boost::filesystem::exists(path.second)))
+    {
+        boost::filesystem::create_directories(path.second);
+        std::cout << "path " << path.first << " did not exist, so created\n";
+        return true;
+    }
+    return true;
+}
 
 int
 main (int argc, char * argv[])
@@ -35,7 +60,9 @@ main (int argc, char * argv[])
 
     std::vector<std::string> raster_files;
     std::string config_file;
-    int colours;
+    int colours = -1;
+    CmdLinePaths legend_file_pth;
+
 
     po::options_description desc("Allowed options");
     desc.add_options()
@@ -43,6 +70,7 @@ main (int argc, char * argv[])
             ("raster,r", po::value<std::vector<std::string> >(&raster_files)->composing(), "gdal compatible rasters to plot")
 //            ("png,p", po::value<std::string>(&png_file), "file path to save the png")
             ("style,s", po::value<int>(&colours), "Specify 0 for blues, 1 for Greens")
+            ("legend,l", po::value<std::string>(&legend_file_pth.first)->default_value("none"), "Legend file for colouring, only used if styles not set")
             ("config-file,c", po::value<std::string>(&config_file), "can be specified with '@name', too")
             ;
 
@@ -75,10 +103,32 @@ main (int argc, char * argv[])
         return EXIT_SUCCESS;
     }
 
+    boost::shared_ptr<ColourMapperGradient> colourmap(nullptr);
+    boost::shared_ptr<MagickWriterGradient> writer(nullptr);
+    if (colours == BLUES) writer.reset(new MagickWriterGradient(BLUES));
+    if (colours == GREENS) writer.reset(new MagickWriterGradient(GREENS));
+    if (colours == -1) 
+    {
+        if (legend_file_pth.first == "none")
+        {
+            std::cout << "Legend file or preset colour gradient not specified\n";
+            return EXIT_SUCCESS;
+        }
+        else
+        {
+            if (pathify(legend_file_pth))
+            {
+                colourmap = parseColourMapGradient(legend_file_pth.second);
+                writer.reset(new MagickWriterGradient(*colourmap));
+            }
+            else
+            {
+                std::cout << "Legend file path does not exist\n";
+                return EXIT_SUCCESS;
+            }
+        }
 
-    boost::shared_ptr<MagickWriterLinearGradient> writer(nullptr);
-    if (colours == BLUES) writer.reset(new MagickWriterLinearGradient(BLUES));
-    if (colours == GREENS) writer.reset(new MagickWriterLinearGradient(GREENS));
+    }
 
 
 

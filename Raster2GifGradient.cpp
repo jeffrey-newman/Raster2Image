@@ -14,7 +14,7 @@
 
 #include <blink/raster/utility.h>
 
-#include "GifWriterLinearGradient.h"
+#include "GifWriterGradient.h"
 #include "Raster2GifShared.h"
 
 
@@ -37,9 +37,9 @@ main (int argc, char * argv[])
     boost::shared_ptr<Raster2GifData> cmd_line_data = *cmd_line_data_opt;
 
 
-    boost::shared_ptr<GifWriterLinearGradient> writer(nullptr);
-    if (cmd_line_data->colours == BLUES) writer.reset(new GifWriterLinearGradient(BLUES, cmd_line_data->min, cmd_line_data->max, cmd_line_data->delay, cmd_line_data->do_timestamp, cmd_line_data->year_start, cmd_line_data->font_size, cmd_line_data->origin_x, cmd_line_data->origin_y, cmd_line_data->dx, cmd_line_data->dy ));
-    if (cmd_line_data->colours == GREENS) writer.reset(new GifWriterLinearGradient(GREENS, cmd_line_data->min, cmd_line_data->max, cmd_line_data->delay, cmd_line_data->do_timestamp, cmd_line_data->year_start, cmd_line_data->font_size, cmd_line_data->origin_x, cmd_line_data->origin_y, cmd_line_data->dx, cmd_line_data->dy));
+    boost::shared_ptr<GifWriterGradient> writer(nullptr);
+    if (cmd_line_data->colours == BLUES) writer.reset(new GifWriterGradient(BLUES, cmd_line_data->min, cmd_line_data->max, cmd_line_data->delay, cmd_line_data->do_timestamp, cmd_line_data->year_start, cmd_line_data->font_size, cmd_line_data->origin_x, cmd_line_data->origin_y, cmd_line_data->dx, cmd_line_data->dy ));
+    if (cmd_line_data->colours == GREENS) writer.reset(new GifWriterGradient(GREENS, cmd_line_data->min, cmd_line_data->max, cmd_line_data->delay, cmd_line_data->do_timestamp, cmd_line_data->year_start, cmd_line_data->font_size, cmd_line_data->origin_x, cmd_line_data->origin_y, cmd_line_data->dx, cmd_line_data->dy));
 
     BOOST_FOREACH(std::string & raster_str, cmd_line_data->raster_files)
                 {

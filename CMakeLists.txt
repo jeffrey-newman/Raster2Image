@@ -97,14 +97,14 @@ file(GLOB_RECURSE AHHZ_Utils
 set(PLOTTER_CLASSES_SRC
         MagickWriterClassified.cpp
         MagickWriterGradient.cpp
-        GifWriterLinearGradient.cpp
+        GifWriterGradient.cpp
         GifWriterClassified.cpp
         )
 
 set(PLOTTER_CLASSES_HDRS
         MagickWriterClassified.h
         MagickWriterGradient.h
-        GifWriterLinearGradient.h
+        GifWriterGradient.h
         GifWriterClassified.h
         )
 
@@ -114,11 +114,11 @@ SET(MagickLibs
         ${ImageMagick_MagickCore_LIBRARY}
         )
 
-add_executable(Raster2PngLinearGradient Raster2ImageLinearGradient.cpp ${PLOTTER_CLASSES_SRC} ${AHHZ_Utils})
-target_link_libraries(Raster2PngLinearGradient  ${Boost_LIBRARIES} ${GDAL_LIBRARY} ${MagickLibs})
-#target_compile_options(Raster2PngLinearGradient PUBLIC ${MAGICK_CXX_FLAGS})
-#target_link_libraries(Raster2PngLinearGradient ${MAGICK_LD_FLAGS})
-target_compile_definitions(Raster2PngLinearGradient PUBLIC "-DMAGICKCORE_QUANTUM_DEPTH=16" PUBLIC "-DMAGICKCORE_HDRI_ENABLE=0")
+add_executable(Raster2PngGradient Raster2ImageGradient.cpp ${PLOTTER_CLASSES_SRC} ${AHHZ_Utils})
+target_link_libraries(Raster2PngGradient  ${Boost_LIBRARIES} ${GDAL_LIBRARY} ${MagickLibs})
+#target_compile_options(Raster2PngGradient PUBLIC ${MAGICK_CXX_FLAGS})
+#target_link_libraries(Raster2PngGradient ${MAGICK_LD_FLAGS})
+target_compile_definitions(Raster2PngGradient PUBLIC "-DMAGICKCORE_QUANTUM_DEPTH=16" PUBLIC "-DMAGICKCORE_HDRI_ENABLE=0")
 
 
 add_executable(Raster2PngClassified Raster2ImageClassified.cpp ${PLOTTER_CLASSES_SRC} ${AHHZ_Utils})
@@ -127,11 +127,11 @@ target_compile_definitions(Raster2PngClassified PUBLIC "-DMAGICKCORE_QUANTUM_DEP
 #target_compile_options(Raster2PngClassified PUBLIC ${MAGICK_CXX_FLAGS})
 #target_link_libraries(Raster2PngClassified ${MAGICK_LD_FLAGS})
 
-add_executable(Raster2GifLinearGradient Raster2GifLinearGradient.cpp ${PLOTTER_CLASSES_SRC} ${AHHZ_Utils} )
-target_link_libraries(Raster2GifLinearGradient ${GIF_LIBRARIES} ${Boost_LIBRARIES} ${GDAL_LIBRARY}  ${MagickLibs})
-target_compile_definitions(Raster2GifLinearGradient PUBLIC "-DMAGICKCORE_QUANTUM_DEPTH=16" PUBLIC "-DMAGICKCORE_HDRI_ENABLE=0")
-#target_compile_options(Raster2GifLinearGradient PUBLIC ${MAGICK_CXX_FLAGS})
-#target_link_libraries(Raster2GifLinearGradient ${MAGICK_LD_FLAGS})
+add_executable(Raster2GifGradient Raster2GifGradient.cpp ${PLOTTER_CLASSES_SRC} ${AHHZ_Utils} )
+target_link_libraries(Raster2GifGradient ${GIF_LIBRARIES} ${Boost_LIBRARIES} ${GDAL_LIBRARY}  ${MagickLibs})
+target_compile_definitions(Raster2GifGradient PUBLIC "-DMAGICKCORE_QUANTUM_DEPTH=16" PUBLIC "-DMAGICKCORE_HDRI_ENABLE=0")
+#target_compile_options(Raster2GifGradient PUBLIC ${MAGICK_CXX_FLAGS})
+#target_link_libraries(Raster2GifGradient ${MAGICK_LD_FLAGS})
 
 add_executable(Raster2GifClassified Raster2GifClassified.cpp ${PLOTTER_CLASSES_SRC} ${AHHZ_Utils} )
 target_link_libraries(Raster2GifClassified ${GIF_LIBRARIES} ${Boost_LIBRARIES} ${GDAL_LIBRARY}  ${MagickLibs})
@@ -139,8 +139,8 @@ target_compile_definitions(Raster2GifClassified PUBLIC "-DMAGICKCORE_QUANTUM_DEP
 #target_compile_options(Raster2GifClassified PUBLIC ${MAGICK_CXX_FLAGS})
 #target_link_libraries(Raster2GifClassified ${MAGICK_LD_FLAGS})
 
-#add_executable(DirectoryRaster2PngLinearGradient DirectoryRaster2PngLinearGradient.cpp ${PLOTTER_CLASSES_SRC} ${AHHZ_Utils})
-#target_link_libraries(DirectoryRaster2PngLinearGradient ${PNG_LIBRARIES} ${PNGwriter_LIBRARIES} ${Boost_LIBRARIES} ${GDAL_LIBRARY})
+#add_executable(DirectoryRaster2PngGradient DirectoryRaster2PngGradient.cpp ${PLOTTER_CLASSES_SRC} ${AHHZ_Utils})
+#target_link_libraries(DirectoryRaster2PngGradient ${PNG_LIBRARIES} ${PNGwriter_LIBRARIES} ${Boost_LIBRARIES} ${GDAL_LIBRARY})
 
 
 #add_executable(Raster2Png ${SOURCE_FILES})

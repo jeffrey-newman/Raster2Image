@@ -127,7 +127,7 @@ BOOST_FUSION_ADAPT_STRUCT(ColourMapperGradient,
 )
 
 
-boost::shared_ptr<ColourMapperGradient> parseColourMapLinearGradient(boost::filesystem::path  classified_legend_file)
+boost::shared_ptr<ColourMapperGradient> parseColourMapGradient(boost::filesystem::path  classified_legend_file)
 {
 
     boost::shared_ptr<ColourMapperGradient> colours(new ColourMapperGradient);
