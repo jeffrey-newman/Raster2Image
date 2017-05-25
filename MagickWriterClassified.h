@@ -74,6 +74,7 @@ public:
         boost::optional<T> no_data_val = raster.noDataVal();
         Magick::ColorRGB no_data_color(1,1,1);
 
+        std::cerr << "Specifying pixmap for image\n";
         for (int i = 0; i < raster.nCols(); ++i)
         {
             for (int j = 0; j < raster.nRows(); ++j)
@@ -94,6 +95,7 @@ public:
         }
         view.sync();
         image.magick("png");
+        std::cerr << "writing file for image\n";
         image.write(file_path.c_str());
     }
 
