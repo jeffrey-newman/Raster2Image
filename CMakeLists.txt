@@ -95,8 +95,6 @@ file(GLOB_RECURSE AHHZ_Utils
 #        )
 
 set(PLOTTER_CLASSES_SRC
-        MagickWriterClassified.cpp
-        MagickWriterGradient.cpp
         GifWriterGradient.cpp
         GifWriterClassified.cpp
         )

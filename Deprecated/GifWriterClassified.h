@@ -11,7 +11,7 @@
 #include <boost/filesystem.hpp>
 #include <blink/raster/gdal_raster.h>
 
-enum BuiltinColourMaps{LANDUSE0, LANDUSE1};
+
 
 class GifWriterClassified {
 

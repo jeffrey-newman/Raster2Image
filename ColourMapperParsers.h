@@ -5,15 +5,14 @@
 #ifndef GEON_ZONAL_OPT_COLOURMAPPERPARSERS_H
 #define GEON_ZONAL_OPT_COLOURMAPPERPARSERS_H
 
-#include "MagickWriterClassified.h"
-#include "MagickWriterGradient.h"
+
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/config/warning_disable.hpp>
 #include <boost/spirit/include/phoenix_core.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/include/phoenix_stl.hpp>
-
+#include "ColourMaps.hpp"
 
 /**
  * @brief this defines what the parser should skip in the optFile
@@ -94,12 +93,12 @@ boost::shared_ptr<ColourMapperClassified> parseColourMapClassified(boost::filesy
 
 
         typedef boost::fusion::vector<int, std::vector<double> >  CategoryColourMap;
-        typedef std::pair<const int, Magick::ColorRGB> ColourMapPair;
+        typedef std::pair<const int, ColourRGB> ColourMapPair;
         BOOST_FOREACH(CategoryColourMap & clr_map, colours)
                     {
-                        colour_mapper->insert(ColourMapPair(boost::fusion::at_c<0>(clr_map),Magick::ColorRGB(boost::fusion::at_c<1>(clr_map)[0] / 255.0,
-                                                                                                             boost::fusion::at_c<1>(clr_map)[1]  / 255.0,
-                                                                                                             boost::fusion::at_c<1>(clr_map)[2]  / 255.0
+                        colour_mapper->insert(ColourMapPair(boost::fusion::at_c<0>(clr_map), ColourRGB(boost::fusion::at_c<1>(clr_map)[0],
+                                                                                                             boost::fusion::at_c<1>(clr_map)[1],
+                                                                                                             boost::fusion::at_c<1>(clr_map)[2]
                                              )             )                                                );
                     }
 
@@ -137,12 +136,12 @@ boost::shared_ptr<ColourMapperGradient> parseColourMapGradient(boost::filesystem
 
     qi::rule<std::string::iterator, Skipper > values_parser =
                             ( qi::lit("transform") >> qi::lit("=") >> (qi::lit("Linear")[qi::_val = ColourMapperGradient::LINEAR] | qi::lit("Log")[qi::_val = ColourMapperGradient::LOG])
-                            | qi::lit("red0") >> qi::lit("=") >> qi::double_[ph::ref(colours->red0) = qi::_1 / ph::val(255.0)]
-                            | qi::lit("green0") >> qi::lit("=") >> qi::double_[ph::ref(colours->green0) = qi::_1 / ph::val(255.0)]
-                            | qi::lit("blue0") >> qi::lit("=") >> qi::double_[ph::ref(colours->blue0) = qi::_1 / ph::val(255.0)]
-                            | qi::lit("red1") >> qi::lit("=") >> qi::double_[ph::ref(colours->red1) = qi::_1 / ph::val(255.0)]
-                            | qi::lit("green1") >> qi::lit("=") >> qi::double_[ph::ref(colours->green1) = qi::_1 / ph::val(255.0)]
-                            | qi::lit("blue1") >> qi::lit("=") >> qi::double_[ph::ref(colours->blue1) = qi::_1 / ph::val(255.0)]
+                            | qi::lit("red0") >> qi::lit("=") >> qi::double_[ph::ref(colours->red0) = qi::_1]
+                            | qi::lit("green0") >> qi::lit("=") >> qi::double_[ph::ref(colours->green0) = qi::_1]
+                            | qi::lit("blue0") >> qi::lit("=") >> qi::double_[ph::ref(colours->blue0) = qi::_1 ]
+                            | qi::lit("red1") >> qi::lit("=") >> qi::double_[ph::ref(colours->red1) = qi::_1]
+                            | qi::lit("green1") >> qi::lit("=") >> qi::double_[ph::ref(colours->green1) = qi::_1]
+                            | qi::lit("blue1") >> qi::lit("=") >> qi::double_[ph::ref(colours->blue1) = qi::_1]
                             | qi::lit("min") >> qi::lit("=") >> qi::double_[ph::ref(colours->min) = qi::_1]
                             | qi::lit("max") >> qi::lit("=") >> qi::double_[ph::ref(colours->max) = qi::_1] );
     qi::rule<std::string::iterator, Skipper > parser = *(values_parser);
