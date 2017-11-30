@@ -52,7 +52,7 @@ public:
     }
 
     template <typename T> void
-    render(blink::raster::gdal_raster<T> & raster, boost::filesystem::path & file_path)
+    render(blink::raster::gdal_raster<T> & raster, const boost::filesystem::path & file_path)
     {
         boost::shared_ptr<cv::Mat> output_img = getCVMat(raster);
         cv::imwrite(file_path.string(), *output_img);
@@ -62,7 +62,7 @@ public:
     template <typename T> boost::shared_ptr<cv::Mat>
             getCVMat(blink::raster::gdal_raster<T> & raster)
     {
-        boost::shared_ptr<cv::Mat> output_img(new cv::Mat(raster.nCols(), raster.nRows(), CV_8UC3));
+        boost::shared_ptr<cv::Mat> output_img(new cv::Mat(raster.nRows(), raster.nCols(), CV_8UC3));
 
 
         boost::optional<T> no_data_val = raster.noDataVal();
@@ -81,8 +81,8 @@ public:
                 else
                 {
                     ColourRGB &colour = colour_map[int(class_val)];
-                    cv::Vec3b colour_cv(colour.red, colour.green, colour.blue);
-                    output_img->at<cv::Vec3b>(j,i) = colour_cv;
+                    cv::Vec3b colour_cv(colour.blue, colour.green, colour.red);
+                    output_img->at<cv::Vec3b>(j, i) = colour_cv;
                 }
 
             }

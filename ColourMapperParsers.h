@@ -94,7 +94,7 @@ boost::shared_ptr<ColourMapperClassified> parseColourMapClassified(boost::filesy
 
         typedef boost::fusion::vector<int, std::vector<double> >  CategoryColourMap;
         typedef std::pair<const int, ColourRGB> ColourMapPair;
-        BOOST_FOREACH(CategoryColourMap & clr_map, colours)
+        for(CategoryColourMap & clr_map: colours)
                     {
                         colour_mapper->insert(ColourMapPair(boost::fusion::at_c<0>(clr_map), ColourRGB(boost::fusion::at_c<1>(clr_map)[0],
                                                                                                              boost::fusion::at_c<1>(clr_map)[1],

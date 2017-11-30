@@ -44,8 +44,18 @@ pathify_mk(CmdLinePaths & path)
     path.second = boost::filesystem::path(path.first);
     if (!(boost::filesystem::exists(path.second)))
     {
-        boost::filesystem::create_directories(path.second);
-        std::cout << "path " << path.first << " did not exist, so created\n";
+        try
+        {
+            boost::filesystem::create_directories(path.second);
+            std::cout << "path " << path.first << " did not exist, so created\n";
+        }
+        catch(boost::filesystem::filesystem_error& e)
+        {
+            std::cout << "Attempted to create " << path.first << " but was unable\n";
+            std::cout << e.what() << "\n";
+            return false;
+        }
+
         return true;
     }
     return true;

@@ -59,9 +59,9 @@ public:
     }
 
     template <typename T> void
-    render(blink::raster::gdal_raster<T> & raster, boost::filesystem::path & file_path)
+    render(blink::raster::gdal_raster<T> & raster, const boost::filesystem::path & file_path)
     {
-        cv::Mat output_img(raster.nCols(), raster.nRows(), CV_8UC3);
+        cv::Mat output_img(raster.nRows(), raster.nCols(), CV_8UC3);
         boost::optional<T> no_data_val = raster.noDataVal();
 
         double red = 0, blue = 0, green = 0;
@@ -95,20 +95,16 @@ public:
                 }
 
                 if (red < 0) red  = 0;
-                if (red > 1) red = 1;
+                if (red > 255) red = 1;
                 if (green < 0) green = 0;
-                if (green > 1) green = 1;
+                if (green > 255) green = 1;
                 if (blue < 0) blue = 0;
-                if (blue > 1) blue = 1;
-                cv::Vec3b mgc_color(red,green,blue);
+                if (blue > 255) blue = 1;
+                cv::Vec3b mgc_color(blue, green, red);
                 output_img.at<cv::Vec3b>(j,i) = mgc_color;
-
             }
-
         }
-
         cv::imwrite(file_path.string(), output_img);
-
     }
 
     template <typename T> void
