@@ -66,7 +66,7 @@ public:
 
 
         boost::optional<T> no_data_val = raster.noDataVal();
-        cv::Vec3b no_data_color(1,1,1);
+//        cv::Vec3b no_data_color(255,255,255);
 
 //        std::cerr << "Specifying pixmap for image\n";
         for (int i = 0; i < raster.nCols(); ++i)
@@ -74,16 +74,16 @@ public:
             for (int j = 0; j < raster.nRows(); ++j)
             {
                 T class_val = raster.get(blink::raster::coordinate_2d(j, i));
-                if (class_val == no_data_val)
-                {
-                    output_img->at<cv::Vec3b>(j,i) = no_data_color;
-                }
-                else
-                {
+//                if (class_val == no_data_val)
+//                {
+//                    output_img->at<cv::Vec3b>(j,i) = no_data_color;
+//                }
+//                else
+//                {
                     ColourRGB &colour = colour_map[int(class_val)];
                     cv::Vec3b colour_cv(colour.blue, colour.green, colour.red);
                     output_img->at<cv::Vec3b>(j, i) = colour_cv;
-                }
+//                }
 
             }
 
