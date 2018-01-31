@@ -29,6 +29,11 @@ typedef std::pair<std::string, boost::filesystem::path> CmdLinePaths;
 bool
 pathify(CmdLinePaths & path)
 {
+    if (path.first.empty())
+    {
+        std::cout << "Warning: path given to pathify in Raster2ImageGradient.cpp is empty\n";
+        return false;
+    }
     path.second = boost::filesystem::path(path.first);
     if (!(boost::filesystem::exists(path.second)))
     {
